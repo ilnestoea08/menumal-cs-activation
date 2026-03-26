@@ -2,9 +2,6 @@
 
 Dashboard operativa per il Customer Success di Menumal, costruita come progetto di selezione.
 
-**Live:** https://ilnestoea08.github.io/menumal-cs-activation/
-
-**Documentazione strategica (Notion):** https://www.notion.so/32fd9b01f9d48125ba3ac6ad6c8b9457
 
 ---
 
