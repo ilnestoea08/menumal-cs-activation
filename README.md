@@ -1,6 +1,6 @@
 # Menumal — CS Activation Machine
 
-Dashboard operativa per il Customer Success di Menumal, costruita come progetto di selezione.
+Dashboard operativa per il Customer Success di Menumal.
 
 
 ---
