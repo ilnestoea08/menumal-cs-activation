@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Menumal — CS Activation Machine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f9fa; }
+    .tab-active { border-bottom: 2px solid #1a1a2e; color: #1a1a2e; font-weight: 600; }
+    .tab-inactive { border-bottom: 2px solid transparent; color: #6b7280; }
+    .tab-inactive:hover { color: #374151; border-bottom-color: #d1d5db; }
+    th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; background: #f9fafb; }
+    td { font-size: 13px; vertical-align: middle; }
+    tr:hover td { background: #f0f4ff; }
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .badge-green { background: #dcfce7; color: #166534; }
+    .badge-yellow { background: #fef9c3; color: #854d0e; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-gray { background: #f3f4f6; color: #4b5563; }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+    .badge-orange { background: #ffedd5; color: #9a3412; }
+    .progress-bar { height: 6px; border-radius: 3px; background: #e5e7eb; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+    .step-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+    .step-done { background: #22c55e; color: white; }
+    .step-pending { background: #e5e7eb; color: #9ca3af; }
+    .kpi-card { background: white; border-radius: 12px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; }
+    input[type=text], select { border: 1px solid #d1d5db; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; }
+    input[type=text]:focus, select:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
+    .action-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+    .action-chat { background: #fde68a; color: #78350f; }
+    .action-banner { background: #bfdbfe; color: #1e3a8a; }
+    .action-post { background: #ddd6fe; color: #4c1d95; }
+    .action-tour { background: #d1fae5; color: #065f46; }
+    .action-upsell { background: #fce7f3; color: #831843; }
+    .action-fund { background: #cffafe; color: #164e63; }
+    .action-ok { background: #f0fdf4; color: #166534; }
+    .fund-stage { border-left: 3px solid; padding-left: 8px; }
+    .fund-not_reached { border-color: #d1d5db; }
+    .fund-shown { border-color: #3b82f6; }
+    .fund-applied { border-color: #f59e0b; }
+    .fund-obtained { border-color: #22c55e; }
+    .tooltip { position: relative; }
+    .tooltip .tip { display: none; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; white-space: nowrap; z-index: 100; max-width: 280px; white-space: normal; text-align: center; }
+    .tooltip:hover .tip { display: block; }
+    table { border-collapse: collapse; }
+    td, th { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<!-- Header -->
+<div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <span class="font-bold text-gray-900 text-lg">Menumal</span>
+      <span class="text-gray-400 text-sm ml-2">CS Activation Machine</span>
+    </div>
+  </div>
+  <div class="text-xs text-gray-400">100 clienti · aggiornato oggi</div>
+</div>
+
+<!-- Tabs -->
+<div class="bg-white border-b border-gray-200 px-6">
+  <div class="flex gap-6">
+    <button onclick="showTab('activation')" id="tab-activation" class="tab-active py-3 text-sm transition-all">
+      Nuovi Clienti <span id="cnt-activation" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"></span>
+    </button>
+    <button onclick="showTab('health')" id="tab-health" class="tab-inactive py-3 text-sm transition-all">
+      Clienti Onboardati <span id="cnt-health" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"></span>
+    </button>
+    <button onclick="showTab('fund')" id="tab-fund" class="tab-inactive py-3 text-sm transition-all">
+      Menumal Fund <span id="cnt-fund" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"></span>
+    </button>
+  </div>
+</div>
+
+<div class="p-6 max-w-full overflow-x-auto">
+
+  <!-- ═══════════════════════════════ TAB 1: ACTIVATION ═══════════════════════════════ -->
+  <div id="pane-activation">
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <h2 class="font-semibold text-gray-900">Activation Machine</h2>
+        <p class="text-xs text-gray-500 mt-0.5">Clienti in fase di onboarding — setup non ancora completato</p>
+      </div>
+      <div class="flex gap-2">
+        <input type="text" id="search-activation" placeholder="Cerca ristorante..." oninput="renderActivation()" class="w-48" />
+        <select id="filter-seg-activation" onchange="renderActivation()">
+          <option value="">Tutti i segmenti</option>
+        </select>
+        <select id="filter-step-activation" onchange="renderActivation()">
+          <option value="">Tutti gli step</option>
+          <option value="0">Step 0-1</option>
+          <option value="2">Step 2-3</option>
+          <option value="4">Step 4+</option>
+        </select>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Ristorante</th>
+            <th class="text-left">Segmento</th>
+            <th class="text-center">Giorni da signup</th>
+            <th class="text-center">Completezza profilo</th>
+            <th class="text-center">Moduli</th>
+            <th class="text-left">Progress activation</th>
+            <th class="text-left">Azione suggerita</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-activation"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ TAB 2: HEALTH ═══════════════════════════════ -->
+  <div id="pane-health" style="display:none">
+    <!-- KPI row -->
+    <div class="grid grid-cols-4 gap-4 mb-5">
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">Health medio</div>
+        <div class="text-2xl font-bold text-gray-900" id="kpi-health-avg">—</div>
+        <div class="text-xs text-gray-400 mt-1">su clienti onboardati</div>
+      </div>
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">Clienti a rischio</div>
+        <div class="text-2xl font-bold text-red-600" id="kpi-at-risk">—</div>
+        <div class="text-xs text-gray-400 mt-1">health zone red</div>
+      </div>
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">Priorità CS</div>
+        <div class="text-2xl font-bold text-amber-600" id="kpi-priority">—</div>
+        <div class="text-xs text-gray-400 mt-1">flag attivo</div>
+      </div>
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">Ticket aperti</div>
+        <div class="text-2xl font-bold text-indigo-600" id="kpi-tickets">—</div>
+        <div class="text-xs text-gray-400 mt-1">totale clienti onboardati</div>
+      </div>
+    </div>
+
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <h2 class="font-semibold text-gray-900">Health Dashboard</h2>
+        <p class="text-xs text-gray-500 mt-0.5">Clienti con setup completato — monitora salute e attiva azioni</p>
+      </div>
+      <div class="flex gap-2">
+        <input type="text" id="search-health" placeholder="Cerca ristorante..." oninput="renderHealth()" class="w-48" />
+        <select id="filter-zone" onchange="renderHealth()">
+          <option value="">Tutte le zone</option>
+          <option value="red">Red</option>
+          <option value="yellow">Yellow</option>
+          <option value="green">Green</option>
+        </select>
+        <select id="filter-fund-health" onchange="renderHealth()">
+          <option value="">Fund: tutti</option>
+          <option value="no">Senza Fund</option>
+          <option value="yes">Con Fund</option>
+        </select>
+        <select id="filter-priority" onchange="renderHealth()">
+          <option value="">Priorità: tutte</option>
+          <option value="yes">Solo priorità CS</option>
+        </select>
+      </div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Ristorante</th>
+            <th class="text-left">Segmento</th>
+            <th class="text-center">Health Score</th>
+            <th class="text-center">Scansioni QR</th>
+            <th class="text-center">Login 30gg</th>
+            <th class="text-center">Post visti</th>
+            <th class="text-center">NPS</th>
+            <th class="text-left">Ultima interazione</th>
+            <th class="text-left">Azione suggerita</th>
+            <th class="text-center">Fund</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-health"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════ TAB 3: FUND ═══════════════════════════════ -->
+  <div id="pane-fund" style="display:none">
+    <!-- KPI row -->
+    <div class="grid grid-cols-4 gap-4 mb-5">
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">Clienti idonei</div>
+        <div class="text-2xl font-bold text-gray-900" id="kpi-idonei">—</div>
+        <div class="text-xs text-gray-400 mt-1">profilo compatibile</div>
+      </div>
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">In candidatura</div>
+        <div class="text-2xl font-bold text-amber-600" id="kpi-applied">—</div>
+        <div class="text-xs text-gray-400 mt-1">pratica aperta</div>
+      </div>
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">Contributi ottenuti</div>
+        <div class="text-2xl font-bold text-green-600" id="kpi-obtained">—</div>
+        <div class="text-xs text-gray-400 mt-1">pratiche chiuse</div>
+      </div>
+      <div class="kpi-card">
+        <div class="text-xs text-gray-500 mb-1">Da attivare ancora</div>
+        <div class="text-2xl font-bold text-indigo-600" id="kpi-not-reached">—</div>
+        <div class="text-xs text-gray-400 mt-1">idonei non contattati</div>
+      </div>
+    </div>
+
+    <div class="mb-4 flex items-center justify-between">
+      <div>
+        <h2 class="font-semibold text-gray-900">Menumal Fund — Pipeline</h2>
+        <p class="text-xs text-gray-500 mt-0.5">Clienti idonei a bandi e agevolazioni · success fee 9% sul contributo ottenuto</p>
+      </div>
+      <div class="flex gap-2">
+        <input type="text" id="search-fund" placeholder="Cerca ristorante..." oninput="renderFund()" class="w-48" />
+        <select id="filter-fund-status" onchange="renderFund()">
+          <option value="">Tutti gli stadi</option>
+          <option value="not_reached">Da contattare</option>
+          <option value="shown">Proposta inviata</option>
+          <option value="applied">In candidatura</option>
+          <option value="obtained">Ottenuto</option>
+        </select>
+        <select id="filter-seg-fund" onchange="renderFund()">
+          <option value="">Tutti i segmenti</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Pipeline legend -->
+    <div class="flex gap-3 mb-4">
+      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
+        <span class="w-3 h-3 rounded-full bg-gray-300 inline-block"></span> Da contattare
+      </div>
+      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
+        <span class="w-3 h-3 rounded-full bg-blue-400 inline-block"></span> Proposta inviata
+      </div>
+      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
+        <span class="w-3 h-3 rounded-full bg-amber-400 inline-block"></span> In candidatura
+      </div>
+      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
+        <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span> Contributo ottenuto
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left">Ristorante</th>
+            <th class="text-left">Segmento</th>
+            <th class="text-left">Stadio Fund</th>
+            <th class="text-center">Health</th>
+            <th class="text-center">Pagamenti</th>
+            <th class="text-center">Moduli attivi</th>
+            <th class="text-left">Sintesi ultima chat</th>
+            <th class="text-left">Azione Fund</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-fund"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="data.js"></script>
+<script>
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+
+function daysSince(dateStr) {
+  if (!dateStr) return 999;
+  const d = new Date(dateStr);
+  const now = new Date('2026-03-26');
+  return Math.floor((now - d) / 86400000);
+}
+
+function activationStep(r) {
+  // 5 steps: account created (always 1), product tour, setup, scansioni>0, survey
+  let step = 1;
+  if (r.productTour) step++;
+  if (r.setupCompleto) step++;
+  if (r.scansioni > 0) step++;
+  if (r.d7Survey) step++;
+  return step;
+}
+
+function stepLabel(n) {
+  const labels = ['Account creato', 'Product Tour', 'Setup completato', 'Prima scansione', 'Survey D7'];
+  return labels[n - 1] || '';
+}
+
+function healthBadge(zone) {
+  if (zone === 'green') return '<span class="badge badge-green">● Verde</span>';
+  if (zone === 'yellow') return '<span class="badge badge-yellow">● Giallo</span>';
+  if (zone === 'red') return '<span class="badge badge-red">● Rosso</span>';
+  return '<span class="badge badge-gray">● N/D</span>';
+}
+
+function segBadge(seg) {
+  const colors = {
+    'Bistrot': 'blue', 'Resort': 'purple', 'Agriturismo': 'green',
+    'Pizzeria': 'orange', 'Trattoria': 'yellow', 'Catena': 'gray',
+    'Ristorante': 'blue', 'Bar': 'gray'
+  };
+  const c = colors[seg] || 'gray';
+  return `<span class="badge badge-${c}">${seg || '—'}</span>`;
+}
+
+function pagamentiBadge(p) {
+  if (p === 'ok') return '<span class="badge badge-green">ok</span>';
+  if (p === 'overdue') return '<span class="badge badge-red">scaduto</span>';
+  return '<span class="badge badge-gray">—</span>';
+}
+
+function fundStageBadge(status) {
+  const map = {
+    'not_reached': ['badge-gray', 'Da contattare'],
+    'shown': ['badge-blue', 'Proposta inviata'],
+    'applied': ['badge-yellow', 'In candidatura'],
+    'obtained': ['badge-green', 'Ottenuto'],
+  };
+  const [cls, label] = map[status] || ['badge-gray', status];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function actionActivation(r) {
+  const days = daysSince(r.dataSignup);
+  const step = activationStep(r);
+  if (days >= 14 && step <= 2) return '<span class="action-chip action-chat">💬 Chat CSM</span>';
+  if (days >= 7 && !r.productTour) return '<span class="action-chip action-tour">🎯 Avvia Product Tour</span>';
+  if (days >= 7 && step <= 3) return '<span class="action-chip action-banner">📌 Banner setup</span>';
+  if (days >= 3 && !r.d7Survey && step >= 3) return '<span class="action-chip action-post">📋 Survey configurazione</span>';
+  if (step === 5) return '<span class="action-chip action-ok">✓ Onboarding completato</span>';
+  return '<span class="action-chip action-tour">🎯 Product Tour D0</span>';
+}
+
+function actionHealth(r) {
+  const actions = [];
+  if (r.prioritaCS) actions.push('<span class="action-chip action-chat">⚡ Priorità CSM</span>');
+  if (r.healthZone === 'red' && r.loginGG < 5) return '<span class="action-chip action-chat">💬 Chat CSM urgente</span>';
+  if (r.healthZone === 'red') return '<span class="action-chip action-post">📣 Post + Product Tour</span>';
+  if (r.healthZone === 'yellow' && r.scansioni < 20) return '<span class="action-chip action-banner">📌 Banner tips QR</span>';
+  if (r.healthZone === 'yellow') return '<span class="action-chip action-post">📣 Post engagement</span>';
+  if (!r.fundIdoneo && r.moduliAttivati < r.moduliTotali) return '<span class="action-chip action-upsell">📈 Proponi moduli</span>';
+  if (r.fundIdoneo && r.fundStatus === 'not_reached') return '<span class="action-chip action-fund">💰 Banner Fund</span>';
+  return '<span class="action-chip action-ok">✓ Cliente sano</span>';
+}
+
+function actionFund(r) {
+  if (r.fundStatus === 'not_reached') return '<span class="action-chip action-fund">💰 Invia Banner Fund</span>';
+  if (r.fundStatus === 'shown') return '<span class="action-chip action-post">📣 Follow-up Post (7gg)</span>';
+  if (r.fundStatus === 'applied') return '<span class="action-chip action-banner">📌 Monitora candidatura</span>';
+  if (r.fundStatus === 'obtained') return '<span class="action-chip action-upsell">📈 Proponi upsell moduli</span>';
+  return '—';
+}
+
+// ─── SEGMENTS LIST ────────────────────────────────────────────────────────────
+
+function populateSegmentFilters() {
+  const segs = [...new Set(DATA.map(r => r.segmento).filter(Boolean))].sort();
+  ['filter-seg-activation', 'filter-seg-fund'].forEach(id => {
+    const el = document.getElementById(id);
+    segs.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s; o.textContent = s;
+      el.appendChild(o);
+    });
+  });
+}
+
+// ─── TAB SWITCHING ────────────────────────────────────────────────────────────
+
+function showTab(name) {
+  ['activation', 'health', 'fund'].forEach(t => {
+    document.getElementById('pane-' + t).style.display = t === name ? '' : 'none';
+    const tab = document.getElementById('tab-' + t);
+    tab.className = t === name ? 'tab-active py-3 text-sm transition-all' : 'tab-inactive py-3 text-sm transition-all';
+  });
+}
+
+// ─── TAB 1: ACTIVATION ────────────────────────────────────────────────────────
+
+function renderActivation() {
+  const search = document.getElementById('search-activation').value.toLowerCase();
+  const seg = document.getElementById('filter-seg-activation').value;
+  const stepFilter = document.getElementById('filter-step-activation').value;
+
+  let rows = DATA.filter(r => !r.setupCompleto || activationStep(r) < 5);
+  if (search) rows = rows.filter(r => r.nome.toLowerCase().includes(search));
+  if (seg) rows = rows.filter(r => r.segmento === seg);
+  if (stepFilter !== '') {
+    const s = parseInt(stepFilter);
+    rows = rows.filter(r => {
+      const st = activationStep(r);
+      if (s === 0) return st <= 2;
+      if (s === 2) return st >= 2 && st <= 3;
+      if (s === 4) return st >= 4;
+      return true;
+    });
+  }
+  rows.sort((a, b) => daysSince(b.dataSignup) - daysSince(a.dataSignup));
+
+  document.getElementById('cnt-activation').textContent = rows.length;
+  const tb = document.getElementById('tbody-activation');
+  tb.innerHTML = rows.map(r => {
+    const days = daysSince(r.dataSignup);
+    const step = activationStep(r);
+    const pct = Math.round((step / 5) * 100);
+    const stepsHtml = [1,2,3,4,5].map(i => {
+      const done = i <= step;
+      const cls = done ? 'step-dot step-done' : 'step-dot step-pending';
+      const label = stepLabel(i);
+      return `<span class="tooltip"><span class="${cls}">${done ? '✓' : i}</span><span class="tip">${label}</span></span>`;
+    }).join('<span class="text-gray-300 mx-0.5">—</span>');
+
+    const daysClass = days > 14 ? 'text-red-600 font-semibold' : days > 7 ? 'text-amber-600' : 'text-gray-700';
+
+    return `<tr>
+      <td>
+        <div class="font-medium text-gray-900">${r.nome}</div>
+        ${r.sintesiChat ? `<div class="text-xs text-gray-400 mt-0.5 max-w-xs truncate">${r.sintesiChat}</div>` : ''}
+      </td>
+      <td>${segBadge(r.segmento)}</td>
+      <td class="text-center"><span class="${daysClass}">${days}gg</span></td>
+      <td class="text-center">
+        <div class="flex items-center gap-2 justify-center">
+          <div class="progress-bar w-16">
+            <div class="progress-fill ${pct >= 70 ? 'bg-green-500' : pct >= 40 ? 'bg-amber-400' : 'bg-red-400'}" style="width:${r.completezza}%"></div>
+          </div>
+          <span class="text-xs text-gray-600">${r.completezza}%</span>
+        </div>
+      </td>
+      <td class="text-center text-xs text-gray-600">${r.moduliAttivati}/${r.moduliTotali}</td>
+      <td>
+        <div class="flex items-center gap-1 flex-wrap">${stepsHtml}</div>
+        <div class="progress-bar mt-1.5 w-32">
+          <div class="progress-fill bg-indigo-500" style="width:${pct}%"></div>
+        </div>
+      </td>
+      <td>${actionActivation(r)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── TAB 2: HEALTH ────────────────────────────────────────────────────────────
+
+function renderHealth() {
+  const search = document.getElementById('search-health').value.toLowerCase();
+  const zone = document.getElementById('filter-zone').value;
+  const fundF = document.getElementById('filter-fund-health').value;
+  const priF = document.getElementById('filter-priority').value;
+
+  let rows = DATA.filter(r => r.setupCompleto);
+  if (search) rows = rows.filter(r => r.nome.toLowerCase().includes(search));
+  if (zone) rows = rows.filter(r => r.healthZone === zone);
+  if (fundF === 'no') rows = rows.filter(r => !r.fundIdoneo || r.fundStatus === 'not_reached');
+  if (fundF === 'yes') rows = rows.filter(r => r.fundIdoneo && r.fundStatus !== 'not_reached');
+  if (priF === 'yes') rows = rows.filter(r => r.prioritaCS);
+
+  rows.sort((a, b) => a.healthScore - b.healthScore);
+
+  // KPIs
+  const allOnboarded = DATA.filter(r => r.setupCompleto);
+  document.getElementById('kpi-health-avg').textContent = Math.round(allOnboarded.reduce((s,r) => s + r.healthScore, 0) / allOnboarded.length);
+  document.getElementById('kpi-at-risk').textContent = allOnboarded.filter(r => r.healthZone === 'red').length;
+  document.getElementById('kpi-priority').textContent = allOnboarded.filter(r => r.prioritaCS).length;
+  document.getElementById('kpi-tickets').textContent = allOnboarded.reduce((s,r) => s + r.ticketCS, 0);
+  document.getElementById('cnt-health').textContent = allOnboarded.length;
+
+  const tb = document.getElementById('tbody-health');
+  tb.innerHTML = rows.map(r => {
+    const npsHtml = r.nps !== null ? `<span class="${r.nps <= 6 ? 'text-red-600' : r.nps <= 8 ? 'text-amber-600' : 'text-green-600'} font-semibold">${r.nps}</span>` : '<span class="text-gray-300">—</span>';
+
+    let fundBadge = '';
+    if (r.fundIdoneo && r.fundStatus === 'not_reached') fundBadge = '<span class="badge badge-blue">Idoneo</span>';
+    else if (r.fundIdoneo) fundBadge = fundStageBadge(r.fundStatus);
+    else fundBadge = '<span class="badge badge-gray">N/A</span>';
+
+    const interBadge = r.tipoUltimaInterazione
+      ? `<span class="badge badge-gray">${r.tipoUltimaInterazione}</span>`
+      : '<span class="text-gray-300">—</span>';
+
+    return `<tr>
+      <td>
+        <div class="flex items-center gap-2">
+          ${r.prioritaCS ? '<span class="tooltip"><span class="text-amber-500 text-xs">⚡</span><span class="tip">Priorità CS</span></span>' : ''}
+          <div>
+            <div class="font-medium text-gray-900">${r.nome}</div>
+            ${r.sintesiChat ? `<div class="text-xs text-gray-400 mt-0.5 max-w-xs truncate">${r.sintesiChat}</div>` : ''}
+          </div>
+        </div>
+      </td>
+      <td>${segBadge(r.segmento)}</td>
+      <td class="text-center">
+        <div class="flex flex-col items-center gap-1">
+          ${healthBadge(r.healthZone)}
+          <span class="text-xs text-gray-500">${r.healthScore}/100</span>
+        </div>
+      </td>
+      <td class="text-center text-sm font-medium text-gray-700">${r.scansioni}</td>
+      <td class="text-center text-sm text-gray-600">${r.loginGG}</td>
+      <td class="text-center text-sm text-gray-600">${r.postVisti}</td>
+      <td class="text-center">${npsHtml}</td>
+      <td>${interBadge}</td>
+      <td>${actionHealth(r)}</td>
+      <td class="text-center">${fundBadge}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── TAB 3: FUND ────────────────────────────────────────────────────────────
+
+function renderFund() {
+  const search = document.getElementById('search-fund').value.toLowerCase();
+  const status = document.getElementById('filter-fund-status').value;
+  const seg = document.getElementById('filter-seg-fund').value;
+
+  let rows = DATA.filter(r => r.fundIdoneo);
+  if (search) rows = rows.filter(r => r.nome.toLowerCase().includes(search));
+  if (status) rows = rows.filter(r => r.fundStatus === status);
+  if (seg) rows = rows.filter(r => r.segmento === seg);
+
+  const order = { 'applied': 0, 'shown': 1, 'not_reached': 2, 'obtained': 3 };
+  rows.sort((a, b) => (order[a.fundStatus] || 9) - (order[b.fundStatus] || 9));
+
+  // KPIs
+  const all = DATA.filter(r => r.fundIdoneo);
+  document.getElementById('kpi-idonei').textContent = all.length;
+  document.getElementById('kpi-applied').textContent = all.filter(r => r.fundStatus === 'applied').length;
+  document.getElementById('kpi-obtained').textContent = all.filter(r => r.fundStatus === 'obtained').length;
+  document.getElementById('kpi-not-reached').textContent = all.filter(r => r.fundStatus === 'not_reached').length;
+  document.getElementById('cnt-fund').textContent = all.length;
+
+  const tb = document.getElementById('tbody-fund');
+  tb.innerHTML = rows.map(r => {
+    const dotColor = {
+      'not_reached': 'bg-gray-300',
+      'shown': 'bg-blue-400',
+      'applied': 'bg-amber-400',
+      'obtained': 'bg-green-500',
+    }[r.fundStatus] || 'bg-gray-300';
+
+    return `<tr>
+      <td>
+        <div class="font-medium text-gray-900">${r.nome}</div>
+      </td>
+      <td>${segBadge(r.segmento)}</td>
+      <td>
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full ${dotColor} inline-block flex-shrink-0"></span>
+          ${fundStageBadge(r.fundStatus)}
+        </div>
+      </td>
+      <td class="text-center">${healthBadge(r.healthZone)}</td>
+      <td class="text-center">${pagamentiBadge(r.pagamenti)}</td>
+      <td class="text-center text-sm text-gray-600">${r.moduliAttivati}/${r.moduliTotali}</td>
+      <td class="max-w-xs">
+        <div class="text-xs text-gray-500 truncate">${r.sintesiChat || '—'}</div>
+      </td>
+      <td>${actionFund(r)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+
+populateSegmentFilters();
+renderActivation();
+renderHealth();
+renderFund();
+</script>
+</body>
+</html>
