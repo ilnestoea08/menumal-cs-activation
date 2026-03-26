@@ -6,550 +6,710 @@
   <title>Menumal — CS Activation Machine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f6fa; display: flex; height: 100vh; overflow: hidden; margin: 0; }
-
-    /* ── Sidebar ── */
-    #sidebar { width: 220px; flex-shrink: 0; background: #1a1a2e; display: flex; flex-direction: column; height: 100vh; }
-    .sidebar-logo { padding: 20px 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-    .sidebar-logo .logo-icon { width: 32px; height: 32px; background: #6366f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-    .sidebar-logo .brand { font-weight: 700; color: white; font-size: 15px; }
-    .sidebar-logo .sub { color: rgba(255,255,255,0.4); font-size: 11px; margin-top: 2px; }
-    nav { flex: 1; padding: 12px 8px; }
-    .nav-item { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; border: none; background: transparent; color: rgba(255,255,255,0.55); font-size: 13px; cursor: pointer; text-align: left; transition: all 0.15s; margin-bottom: 2px; }
-    .nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
-    .nav-item.active { background: rgba(99,102,241,0.25); color: white; font-weight: 600; }
-    .nav-item .nav-icon { font-size: 15px; flex-shrink: 0; }
-    .nav-item .nav-label { flex: 1; }
-    .nav-count { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); font-size: 11px; font-weight: 600; padding: 1px 7px; border-radius: 999px; }
-    .nav-item.active .nav-count { background: rgba(99,102,241,0.4); color: white; }
-    .sidebar-footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.3); font-size: 11px; }
-
-    /* ── Main ── */
-    #main { flex: 1; overflow-y: auto; overflow-x: auto; padding: 24px; }
-
-    /* ── Tables ── */
-    th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; background: #f9fafb; }
-    td { font-size: 13px; vertical-align: middle; }
-    tr:hover td { background: #f0f4ff; }
-    table { border-collapse: collapse; width: 100%; }
-    td, th { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; }
-
-    /* ── Badges ── */
-    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-    .badge-green { background: #dcfce7; color: #166534; }
-    .badge-yellow { background: #fef9c3; color: #854d0e; }
-    .badge-red { background: #fee2e2; color: #991b1b; }
-    .badge-gray { background: #f3f4f6; color: #4b5563; }
-    .badge-blue { background: #dbeafe; color: #1e40af; }
-    .badge-purple { background: #ede9fe; color: #5b21b6; }
-    .badge-orange { background: #ffedd5; color: #9a3412; }
-
-    /* ── Progress ── */
-    .progress-bar { height: 6px; border-radius: 3px; background: #e5e7eb; overflow: hidden; }
-    .progress-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
-    .step-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
-    .step-done { background: #22c55e; color: white; }
-    .step-pending { background: #e5e7eb; color: #9ca3af; }
-
-    /* ── KPI ── */
-    .kpi-card { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border: 1px solid #e5e7eb; }
-
-    /* ── Inputs ── */
-    input[type=text], select { border: 1px solid #d1d5db; border-radius: 6px; padding: 6px 10px; font-size: 13px; outline: none; background: white; }
-    input[type=text]:focus, select:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,0.1); }
-
-    /* ── Action chips ── */
-    .action-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; white-space: nowrap; }
-    .action-chat { background: #fde68a; color: #78350f; }
-    .action-banner { background: #bfdbfe; color: #1e3a8a; }
-    .action-post { background: #ddd6fe; color: #4c1d95; }
-    .action-tour { background: #d1fae5; color: #065f46; }
-    .action-upsell { background: #fce7f3; color: #831843; }
-    .action-fund { background: #cffafe; color: #164e63; }
-    .action-ok { background: #f0fdf4; color: #166534; }
-
-    /* ── Tooltip ── */
-    .tooltip { position: relative; }
-    .tooltip .tip { display: none; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: #1a1a2e; color: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; z-index: 100; max-width: 240px; white-space: normal; text-align: center; }
-    .tooltip:hover .tip { display: block; }
+    *{box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f6fa;display:flex;height:100vh;overflow:hidden;margin:0}
+    /* Sidebar */
+    #sidebar{width:220px;flex-shrink:0;background:#1a1a2e;display:flex;flex-direction:column;height:100vh}
+    .sidebar-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .logo-icon{width:32px;height:32px;background:#6366f1;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+    .brand{font-weight:700;color:white;font-size:15px}
+    .sub{color:rgba(255,255,255,.4);font-size:11px;margin-top:2px}
+    nav{flex:1;padding:12px 8px}
+    .nav-item{width:100%;display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;border:none;background:transparent;color:rgba(255,255,255,.55);font-size:13px;cursor:pointer;text-align:left;transition:all .15s;margin-bottom:2px}
+    .nav-item:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.85)}
+    .nav-item.active{background:rgba(99,102,241,.25);color:white;font-weight:600}
+    .nav-icon{font-size:15px;flex-shrink:0}
+    .nav-label{flex:1}
+    .nav-count{background:rgba(255,255,255,.12);color:rgba(255,255,255,.6);font-size:11px;font-weight:600;padding:1px 7px;border-radius:999px}
+    .nav-item.active .nav-count{background:rgba(99,102,241,.4);color:white}
+    .sidebar-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.3);font-size:11px}
+    /* Main */
+    #main{flex:1;overflow-y:auto;overflow-x:auto;padding:24px}
+    /* Tables */
+    th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;background:#f9fafb}
+    td{font-size:13px;vertical-align:middle}
+    tr:hover td{background:#f0f4ff}
+    table{border-collapse:collapse;width:100%}
+    td,th{padding:10px 12px;border-bottom:1px solid #f3f4f6}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap}
+    .badge-green{background:#dcfce7;color:#166534}
+    .badge-yellow{background:#fef9c3;color:#854d0e}
+    .badge-red{background:#fee2e2;color:#991b1b}
+    .badge-gray{background:#f3f4f6;color:#4b5563}
+    .badge-blue{background:#dbeafe;color:#1e40af}
+    .badge-purple{background:#ede9fe;color:#5b21b6}
+    .badge-orange{background:#ffedd5;color:#9a3412}
+    /* Progress */
+    .progress-bar{height:6px;border-radius:3px;background:#e5e7eb;overflow:hidden}
+    .progress-fill{height:100%;border-radius:3px;transition:width .3s}
+    .step-dot{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+    .step-done{background:#22c55e;color:white}
+    .step-pending{background:#e5e7eb;color:#9ca3af}
+    /* KPI */
+    .kpi-card{background:white;border-radius:12px;padding:18px 20px;box-shadow:0 1px 3px rgba(0,0,0,.06);border:1px solid #e5e7eb}
+    /* Inputs */
+    input[type=text],select{border:1px solid #d1d5db;border-radius:6px;padding:6px 10px;font-size:13px;outline:none;background:white}
+    input[type=text]:focus,select:focus{border-color:#6366f1;box-shadow:0 0 0 2px rgba(99,102,241,.1)}
+    /* Action chips */
+    .action-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;cursor:pointer;transition:all .15s;border:1.5px solid transparent}
+    .action-chip:hover{opacity:.85}
+    .action-chip.active-filter{border-color:currentColor;box-shadow:0 0 0 2px rgba(0,0,0,.1)}
+    .action-chat{background:#fde68a;color:#78350f}
+    .action-banner{background:#bfdbfe;color:#1e3a8a}
+    .action-post{background:#ddd6fe;color:#4c1d95}
+    .action-tour{background:#d1fae5;color:#065f46}
+    .action-upsell{background:#fce7f3;color:#831843}
+    .action-fund{background:#cffafe;color:#164e63}
+    .action-ok{background:#f0fdf4;color:#166534;cursor:default}
+    /* Tooltip */
+    .tooltip{position:relative}
+    .tooltip .tip{display:none;position:absolute;bottom:120%;left:50%;transform:translateX(-50%);background:#1a1a2e;color:white;padding:6px 10px;border-radius:6px;font-size:11px;z-index:100;max-width:240px;white-space:normal;text-align:center;pointer-events:none}
+    .tooltip:hover .tip{display:block}
+    /* Chart bars */
+    .chart-bar{height:28px;border-radius:6px;display:flex;align-items:center;padding:0 10px;font-size:12px;font-weight:600;color:white;min-width:2px;transition:width .4s}
+    /* Italy map */
+    .map-dot{cursor:pointer;transition:r .15s}
+    .map-dot:hover{r:7}
+    /* Active filter banner */
+    .filter-banner{background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:8px 12px;font-size:12px;color:#4338ca;display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .filter-banner button{background:#c7d2fe;border:none;border-radius:4px;padding:2px 8px;font-size:11px;cursor:pointer;color:#3730a3;font-weight:600}
+    .filter-banner button:hover{background:#a5b4fc}
   </style>
 </head>
 <body>
 
-<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<!-- ═══ SIDEBAR ═══ -->
 <aside id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-icon">
-      <svg width="16" height="16" fill="white" viewBox="0 0 24 24"><path stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
     <div class="brand">Menumal</div>
     <div class="sub">CS Activation Machine</div>
   </div>
-
   <nav>
-    <button id="nav-activation" class="nav-item active" onclick="showTab('activation')">
-      <span class="nav-icon">🚀</span>
-      <span class="nav-label">Nuovi Clienti</span>
-      <span class="nav-count" id="cnt-activation"></span>
-    </button>
-    <button id="nav-health" class="nav-item" onclick="showTab('health')">
-      <span class="nav-icon">💚</span>
-      <span class="nav-label">Clienti Onboardati</span>
-      <span class="nav-count" id="cnt-health"></span>
-    </button>
-    <button id="nav-fund" class="nav-item" onclick="showTab('fund')">
-      <span class="nav-icon">💰</span>
-      <span class="nav-label">Menumal Fund</span>
-      <span class="nav-count" id="cnt-fund"></span>
-    </button>
+    <button id="nav-overview"    class="nav-item active" onclick="showTab('overview')">   <span class="nav-icon">📊</span><span class="nav-label">Panoramica</span></button>
+    <button id="nav-activation"  class="nav-item"        onclick="showTab('activation')"> <span class="nav-icon">🚀</span><span class="nav-label">Nuovi Clienti</span>    <span class="nav-count" id="cnt-activation"></span></button>
+    <button id="nav-health"      class="nav-item"        onclick="showTab('health')">     <span class="nav-icon">💚</span><span class="nav-label">Onboardati</span>       <span class="nav-count" id="cnt-health"></span></button>
+    <button id="nav-fund"        class="nav-item"        onclick="showTab('fund')">       <span class="nav-icon">💰</span><span class="nav-label">Menumal Fund</span>     <span class="nav-count" id="cnt-fund"></span></button>
   </nav>
-
   <div class="sidebar-footer">100 clienti · aggiornato oggi</div>
 </aside>
 
-<!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+<!-- ═══ MAIN ═══ -->
 <div id="main">
 
-  <!-- ══════════════ PANE 1: ACTIVATION ══════════════ -->
-  <div id="pane-activation">
-    <div class="mb-4 flex items-center justify-between">
-      <div>
-        <h2 class="font-semibold text-gray-900 text-base">Activation Machine</h2>
-        <p class="text-xs text-gray-500 mt-0.5">Clienti in fase di onboarding — setup non ancora completato</p>
-      </div>
-      <div class="flex gap-2">
-        <input type="text" id="search-activation" placeholder="Cerca ristorante..." oninput="renderActivation()" class="w-44" />
-        <select id="filter-seg-activation" onchange="renderActivation()">
-          <option value="">Tutti i segmenti</option>
-        </select>
-        <select id="filter-step-activation" onchange="renderActivation()">
-          <option value="">Tutti gli step</option>
-          <option value="0">Step 1–2 (inizio)</option>
-          <option value="2">Step 3–4 (metà)</option>
-          <option value="4">Step 5 (quasi finito)</option>
-        </select>
+<!-- ══ PANE: OVERVIEW ══ -->
+<div id="pane-overview">
+  <div class="mb-5">
+    <h2 class="font-semibold text-gray-900 text-base">Panoramica</h2>
+    <p class="text-xs text-gray-500 mt-0.5">Stato generale della base clienti Menumal</p>
+  </div>
+
+  <!-- KPI row -->
+  <div class="grid grid-cols-6 gap-3 mb-6" id="overview-kpis"></div>
+
+  <!-- Charts + Map row -->
+  <div class="grid grid-cols-3 gap-4 mb-6">
+    <!-- Health zones -->
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div class="font-semibold text-gray-800 text-sm mb-3">Health Score</div>
+      <div class="text-xs text-gray-400 mb-4">Clienti onboardati (54)</div>
+      <div id="chart-health" class="space-y-2"></div>
+      <div class="mt-4 pt-3 border-t border-gray-100">
+        <div class="text-xs text-gray-500">Health medio: <span class="font-semibold text-gray-800" id="health-avg-ov">—</span>/100</div>
       </div>
     </div>
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <table>
-        <thead>
-          <tr>
-            <th class="text-left">Ristorante</th>
-            <th class="text-left">Segmento</th>
-            <th class="text-center">Giorni da signup</th>
-            <th class="text-center">Completezza profilo</th>
-            <th class="text-center">Moduli</th>
-            <th class="text-left">Progress activation (5 step)</th>
-            <th class="text-left">Azione suggerita</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-activation"></tbody>
-      </table>
+    <!-- Activation funnel -->
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div class="font-semibold text-gray-800 text-sm mb-3">Activation Funnel</div>
+      <div class="text-xs text-gray-400 mb-4">Nuovi clienti per step completato (46)</div>
+      <div id="chart-activation" class="space-y-2"></div>
+    </div>
+    <!-- Fund pipeline -->
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div class="font-semibold text-gray-800 text-sm mb-3">Menumal Fund</div>
+      <div class="text-xs text-gray-400 mb-4">Pipeline clienti idonei (60)</div>
+      <div id="chart-fund" class="space-y-2"></div>
+      <div class="mt-4 pt-3 border-t border-gray-100">
+        <div class="text-xs text-gray-500">Segmento più attivo: <span class="font-semibold text-gray-800" id="fund-top-seg">—</span></div>
+      </div>
     </div>
   </div>
 
-  <!-- ══════════════ PANE 2: HEALTH ══════════════ -->
-  <div id="pane-health" style="display:none">
-    <div class="grid grid-cols-4 gap-4 mb-5">
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">Health medio</div>
-        <div class="text-2xl font-bold text-gray-900" id="kpi-health-avg">—</div>
-        <div class="text-xs text-gray-400 mt-1">su clienti onboardati</div>
-      </div>
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">Clienti a rischio</div>
-        <div class="text-2xl font-bold text-red-600" id="kpi-at-risk">—</div>
-        <div class="text-xs text-gray-400 mt-1">health zone rosso</div>
-      </div>
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">Priorità CS</div>
-        <div class="text-2xl font-bold text-amber-600" id="kpi-priority">—</div>
-        <div class="text-xs text-gray-400 mt-1">flag attivo</div>
-      </div>
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">Ticket aperti</div>
-        <div class="text-2xl font-bold text-indigo-600" id="kpi-tickets">—</div>
-        <div class="text-xs text-gray-400 mt-1">totale base onboardata</div>
+  <!-- Italy map + segmenti -->
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div class="font-semibold text-gray-800 text-sm mb-1">Distribuzione Geografica</div>
+      <div class="text-xs text-gray-400 mb-3">Clienti per regione (distribuzione simulata)</div>
+      <div class="flex gap-4 items-start">
+        <svg id="italy-map" viewBox="0 0 100 135" width="180" height="243" style="flex-shrink:0;overflow:visible">
+          <!-- Mainland Italy -->
+          <path d="M8,40 L50,10 L63,16 L52,38 L65,56 L88,78 L96,90 L84,95 L76,120 L64,118 L66,96 L66,82 L49,65 L32,48 L20,36 Z" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.2"/>
+          <!-- Sicily -->
+          <path d="M48,124 L68,118 L70,128 L54,132 Z" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.2"/>
+          <!-- Sardinia -->
+          <path d="M12,74 L22,70 L24,90 L14,94 Z" fill="#eef2ff" stroke="#a5b4fc" stroke-width="1.2"/>
+          <g id="map-dots"></g>
+        </svg>
+        <div id="map-legend" class="flex-1 text-xs space-y-1 overflow-y-auto" style="max-height:240px"></div>
       </div>
     </div>
-
-    <div class="mb-4 flex items-center justify-between">
-      <div>
-        <h2 class="font-semibold text-gray-900 text-base">Health Dashboard</h2>
-        <p class="text-xs text-gray-500 mt-0.5">Clienti con setup completato — monitora salute e attiva azioni</p>
-      </div>
-      <div class="flex gap-2">
-        <input type="text" id="search-health" placeholder="Cerca ristorante..." oninput="renderHealth()" class="w-44" />
-        <select id="filter-zone" onchange="renderHealth()">
-          <option value="">Tutte le zone</option>
-          <option value="red">Rosso</option>
-          <option value="yellow">Giallo</option>
-          <option value="green">Verde</option>
-        </select>
-        <select id="filter-fund-health" onchange="renderHealth()">
-          <option value="">Fund: tutti</option>
-          <option value="no">Senza Fund</option>
-          <option value="yes">Con Fund</option>
-        </select>
-        <select id="filter-priority" onchange="renderHealth()">
-          <option value="">Priorità: tutte</option>
-          <option value="yes">Solo priorità CS</option>
-        </select>
-      </div>
-    </div>
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <table>
-        <thead>
-          <tr>
-            <th class="text-left">Ristorante</th>
-            <th class="text-left">Segmento</th>
-            <th class="text-center">Health Score</th>
-            <th class="text-center">Scansioni QR</th>
-            <th class="text-center">Login 30gg</th>
-            <th class="text-center">Post visti</th>
-            <th class="text-center">NPS</th>
-            <th class="text-left">Ultima interazione</th>
-            <th class="text-left">Azione suggerita</th>
-            <th class="text-center">Fund</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-health"></tbody>
-      </table>
+    <!-- Segmenti breakdown -->
+    <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+      <div class="font-semibold text-gray-800 text-sm mb-1">Clienti per Segmento</div>
+      <div class="text-xs text-gray-400 mb-3">Salute media per tipo di locale</div>
+      <div id="chart-segments" class="space-y-2.5"></div>
     </div>
   </div>
+</div>
 
-  <!-- ══════════════ PANE 3: FUND ══════════════ -->
-  <div id="pane-fund" style="display:none">
-    <div class="grid grid-cols-4 gap-4 mb-5">
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">Clienti idonei</div>
-        <div class="text-2xl font-bold text-gray-900" id="kpi-idonei">—</div>
-        <div class="text-xs text-gray-400 mt-1">profilo compatibile</div>
-      </div>
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">In candidatura</div>
-        <div class="text-2xl font-bold text-amber-600" id="kpi-applied">—</div>
-        <div class="text-xs text-gray-400 mt-1">pratica aperta</div>
-      </div>
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">Contributi ottenuti</div>
-        <div class="text-2xl font-bold text-green-600" id="kpi-obtained">—</div>
-        <div class="text-xs text-gray-400 mt-1">pratiche chiuse</div>
-      </div>
-      <div class="kpi-card">
-        <div class="text-xs text-gray-500 mb-1">Da attivare ancora</div>
-        <div class="text-2xl font-bold text-indigo-600" id="kpi-not-reached">—</div>
-        <div class="text-xs text-gray-400 mt-1">idonei non contattati</div>
-      </div>
+<!-- ══ PANE: ACTIVATION ══ -->
+<div id="pane-activation" style="display:none">
+  <div id="filter-banner-activation" class="filter-banner" style="display:none">
+    <span>Filtro attivo: <strong id="filter-label-activation"></strong></span>
+    <button onclick="clearActionFilter('activation')">× Rimuovi filtro</button>
+  </div>
+  <div class="mb-4 flex items-center justify-between">
+    <div>
+      <h2 class="font-semibold text-gray-900 text-base">Activation Machine</h2>
+      <p class="text-xs text-gray-500 mt-0.5">Clienti in fase di onboarding — clicca un'azione per filtrare</p>
     </div>
-
-    <div class="mb-4 flex items-center justify-between">
-      <div>
-        <h2 class="font-semibold text-gray-900 text-base">Menumal Fund — Pipeline</h2>
-        <p class="text-xs text-gray-500 mt-0.5">Clienti idonei a bandi e agevolazioni · success fee 9% sul contributo ottenuto</p>
-      </div>
-      <div class="flex gap-2">
-        <input type="text" id="search-fund" placeholder="Cerca ristorante..." oninput="renderFund()" class="w-44" />
-        <select id="filter-fund-status" onchange="renderFund()">
-          <option value="">Tutti gli stadi</option>
-          <option value="not_reached">Da contattare</option>
-          <option value="shown">Proposta inviata</option>
-          <option value="applied">In candidatura</option>
-          <option value="obtained">Ottenuto</option>
-        </select>
-        <select id="filter-seg-fund" onchange="renderFund()">
-          <option value="">Tutti i segmenti</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="flex gap-3 mb-4">
-      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
-        <span class="w-2.5 h-2.5 rounded-full bg-gray-300 inline-block"></span> Da contattare
-      </div>
-      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
-        <span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span> Proposta inviata
-      </div>
-      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
-        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> In candidatura
-      </div>
-      <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200">
-        <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> Contributo ottenuto
-      </div>
-    </div>
-
-    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-      <table>
-        <thead>
-          <tr>
-            <th class="text-left">Ristorante</th>
-            <th class="text-left">Segmento</th>
-            <th class="text-left">Stadio Fund</th>
-            <th class="text-center">Health</th>
-            <th class="text-center">Pagamenti</th>
-            <th class="text-center">Moduli attivi</th>
-            <th class="text-left">Sintesi ultima chat</th>
-            <th class="text-left">Azione Fund</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-fund"></tbody>
-      </table>
+    <div class="flex gap-2 flex-wrap justify-end">
+      <input type="text" id="search-activation" placeholder="Cerca..." oninput="renderActivation()" class="w-36"/>
+      <select id="filter-seg-activation" onchange="renderActivation()"><option value="">Tutti i segmenti</option></select>
+      <select id="filter-step-activation" onchange="renderActivation()">
+        <option value="">Tutti gli step</option>
+        <option value="0">Step 1–2</option>
+        <option value="2">Step 3–4</option>
+        <option value="4">Step 5</option>
+      </select>
     </div>
   </div>
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <table><thead><tr>
+      <th class="text-left">Ristorante</th>
+      <th class="text-left">Segmento</th>
+      <th class="text-center">Giorni da signup</th>
+      <th class="text-center">Completezza</th>
+      <th class="text-center">Moduli</th>
+      <th class="text-left">5 Step activation</th>
+      <th class="text-left">Azione suggerita</th>
+    </tr></thead>
+    <tbody id="tbody-activation"></tbody></table>
+  </div>
+</div>
+
+<!-- ══ PANE: HEALTH ══ -->
+<div id="pane-health" style="display:none">
+  <div id="filter-banner-health" class="filter-banner" style="display:none">
+    <span>Filtro attivo: <strong id="filter-label-health"></strong></span>
+    <button onclick="clearActionFilter('health')">× Rimuovi filtro</button>
+  </div>
+  <div class="grid grid-cols-4 gap-4 mb-5">
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">Health medio</div><div class="text-2xl font-bold text-gray-900" id="kpi-health-avg">—</div><div class="text-xs text-gray-400 mt-1">onboardati</div></div>
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">A rischio</div><div class="text-2xl font-bold text-red-600" id="kpi-at-risk">—</div><div class="text-xs text-gray-400 mt-1">zona rossa</div></div>
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">Priorità CS</div><div class="text-2xl font-bold text-amber-600" id="kpi-priority">—</div><div class="text-xs text-gray-400 mt-1">flag attivo</div></div>
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">Ticket aperti</div><div class="text-2xl font-bold text-indigo-600" id="kpi-tickets">—</div><div class="text-xs text-gray-400 mt-1">totale</div></div>
+  </div>
+  <div class="mb-4 flex items-center justify-between">
+    <div>
+      <h2 class="font-semibold text-gray-900 text-base">Health Dashboard</h2>
+      <p class="text-xs text-gray-500 mt-0.5">Clienti onboardati — clicca un'azione per filtrare</p>
+    </div>
+    <div class="flex gap-2 flex-wrap justify-end">
+      <input type="text" id="search-health" placeholder="Cerca..." oninput="renderHealth()" class="w-36"/>
+      <select id="filter-zone" onchange="renderHealth()"><option value="">Tutte le zone</option><option value="red">Rosso</option><option value="yellow">Giallo</option><option value="green">Verde</option></select>
+      <select id="filter-fund-health" onchange="renderHealth()"><option value="">Fund: tutti</option><option value="no">Senza Fund</option><option value="yes">Con Fund</option></select>
+      <select id="filter-priority" onchange="renderHealth()"><option value="">Priorità: tutte</option><option value="yes">Solo priorità CS</option></select>
+    </div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <table><thead><tr>
+      <th class="text-left">Ristorante</th><th class="text-left">Segmento</th>
+      <th class="text-center">Health Score</th><th class="text-center">Scansioni QR</th>
+      <th class="text-center">Login 30gg</th><th class="text-center">Post visti</th>
+      <th class="text-center">NPS</th><th class="text-left">Ultima int.</th>
+      <th class="text-left">Azione suggerita</th><th class="text-center">Fund</th>
+    </tr></thead>
+    <tbody id="tbody-health"></tbody></table>
+  </div>
+</div>
+
+<!-- ══ PANE: FUND ══ -->
+<div id="pane-fund" style="display:none">
+  <div id="filter-banner-fund" class="filter-banner" style="display:none">
+    <span>Filtro attivo: <strong id="filter-label-fund"></strong></span>
+    <button onclick="clearActionFilter('fund')">× Rimuovi filtro</button>
+  </div>
+  <div class="grid grid-cols-4 gap-4 mb-5">
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">Clienti idonei</div><div class="text-2xl font-bold text-gray-900" id="kpi-idonei">—</div><div class="text-xs text-gray-400 mt-1">profilo compatibile</div></div>
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">In candidatura</div><div class="text-2xl font-bold text-amber-600" id="kpi-applied">—</div><div class="text-xs text-gray-400 mt-1">pratica aperta</div></div>
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">Contributi ottenuti</div><div class="text-2xl font-bold text-green-600" id="kpi-obtained">—</div><div class="text-xs text-gray-400 mt-1">pratiche chiuse</div></div>
+    <div class="kpi-card"><div class="text-xs text-gray-500 mb-1">Da attivare</div><div class="text-2xl font-bold text-indigo-600" id="kpi-not-reached">—</div><div class="text-xs text-gray-400 mt-1">idonei non contattati</div></div>
+  </div>
+  <div class="mb-4 flex items-center justify-between">
+    <div>
+      <h2 class="font-semibold text-gray-900 text-base">Menumal Fund — Pipeline</h2>
+      <p class="text-xs text-gray-500 mt-0.5">Success fee 9% · clicca un'azione per filtrare</p>
+    </div>
+    <div class="flex gap-2 flex-wrap justify-end">
+      <input type="text" id="search-fund" placeholder="Cerca..." oninput="renderFund()" class="w-36"/>
+      <select id="filter-fund-status" onchange="renderFund()"><option value="">Tutti gli stadi</option><option value="not_reached">Da contattare</option><option value="shown">Proposta inviata</option><option value="applied">In candidatura</option><option value="obtained">Ottenuto</option></select>
+      <select id="filter-seg-fund" onchange="renderFund()"><option value="">Tutti i segmenti</option></select>
+    </div>
+  </div>
+  <div class="flex gap-3 mb-4">
+    <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200"><span class="w-2.5 h-2.5 rounded-full bg-gray-300 inline-block"></span>Da contattare</div>
+    <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200"><span class="w-2.5 h-2.5 rounded-full bg-blue-400 inline-block"></span>Proposta inviata</div>
+    <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>In candidatura</div>
+    <div class="flex items-center gap-2 text-xs text-gray-500 bg-white px-3 py-1.5 rounded-lg border border-gray-200"><span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span>Contributo ottenuto</div>
+  </div>
+  <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <table><thead><tr>
+      <th class="text-left">Ristorante</th><th class="text-left">Segmento</th>
+      <th class="text-left">Stadio Fund</th><th class="text-center">Health</th>
+      <th class="text-center">Pagamenti</th><th class="text-center">Moduli attivi</th>
+      <th class="text-left">Sintesi ultima chat</th><th class="text-left">Azione Fund</th>
+    </tr></thead>
+    <tbody id="tbody-fund"></tbody></table>
+  </div>
+</div>
 
 </div><!-- /main -->
 
 <script src="data.js"></script>
 <script>
-// ─── HELPERS ────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// REGIONS (assigned deterministically by record index)
+// ═══════════════════════════════════════════════════════════════
+const REGIONS = [
+  {name:"Lombardia",      x:26.6, y:21.5, weight:15},
+  {name:"Lazio",          x:50.2, y:68.7, weight:12},
+  {name:"Campania",       x:70.3, y:82.8, weight:10},
+  {name:"Veneto",         x:45.1, y:22.1, weight:8},
+  {name:"Toscana",        x:38.4, y:47.9, weight:8},
+  {name:"Sicilia",        x:62.8, y:125.8, weight:7},
+  {name:"Emilia-Romagna", x:38.2, y:34.1, weight:7},
+  {name:"Piemonte",       x:9.8,  y:32.1, weight:6},
+  {name:"Puglia",         x:83.8, y:79.0, weight:5},
+  {name:"Sardegna",       x:20.8, y:92.8, weight:4},
+  {name:"Calabria",       x:80.4, y:108.3,weight:4},
+  {name:"Marche",         x:55.2, y:46.0, weight:3},
+  {name:"Liguria",        x:15.7, y:37.3, weight:3},
+  {name:"Abruzzo",        x:60.8, y:62.7, weight:3},
+  {name:"Basilicata",     x:78.7, y:87.2, weight:2},
+  {name:"Umbria",         x:48.6, y:52.8, weight:2},
+  {name:"Friuli-VG",      x:54.9, y:12.9, weight:2},
+  {name:"Trentino-AA",    x:38.0, y:9.0,  weight:2},
+  {name:"Molise",         x:67.8, y:72.6, weight:1},
+  {name:"Valle d'Aosta",  x:7.0,  y:17.8, weight:1},
+];
+const TOTAL_REG_WEIGHT = REGIONS.reduce((s,r) => s+r.weight, 0);
 
-function daysSince(dateStr) {
-  if (!dateStr) return 999;
-  return Math.floor((new Date('2026-03-26') - new Date(dateStr)) / 86400000);
+function assignRegion(idx) {
+  let v = ((idx * 2654435761) >>> 0) % TOTAL_REG_WEIGHT;
+  for (const r of REGIONS) { v -= r.weight; if (v < 0) return r.name; }
+  return REGIONS[0].name;
+}
+DATA.forEach((r, i) => { r.regione = assignRegion(i); });
+
+// ═══════════════════════════════════════════════════════════════
+// ACTION FILTER STATE
+// ═══════════════════════════════════════════════════════════════
+const actionFilters = { activation: null, health: null, fund: null };
+
+const ACTION_LABELS = {
+  chat:   '💬 Chat CSM',
+  banner: '📌 Banner setup',
+  tour:   '🎯 Product Tour',
+  survey: '📋 Survey',
+  post:   '📣 Post Intercom',
+  fund:   '💰 Banner Fund',
+  upsell: '📈 Proponi moduli',
+  ok:     '✓ OK',
+};
+const ACTION_CSS = {
+  chat:'action-chat', banner:'action-banner', tour:'action-tour',
+  survey:'action-post', post:'action-post', fund:'action-fund',
+  upsell:'action-upsell', ok:'action-ok',
+};
+
+function toggleActionFilter(tab, key) {
+  if (key === 'ok') return;
+  actionFilters[tab] = actionFilters[tab] === key ? null : key;
+  const banner = document.getElementById('filter-banner-'+tab);
+  const label  = document.getElementById('filter-label-'+tab);
+  if (actionFilters[tab]) {
+    banner.style.display = 'flex';
+    label.textContent = ACTION_LABELS[actionFilters[tab]] || actionFilters[tab];
+  } else {
+    banner.style.display = 'none';
+  }
+  if (tab==='activation') renderActivation();
+  if (tab==='health')     renderHealth();
+  if (tab==='fund')       renderFund();
 }
 
+function clearActionFilter(tab) {
+  actionFilters[tab] = null;
+  document.getElementById('filter-banner-'+tab).style.display = 'none';
+  if (tab==='activation') renderActivation();
+  if (tab==='health')     renderHealth();
+  if (tab==='fund')       renderFund();
+}
+
+function chip(key, tab) {
+  const isActive = actionFilters[tab] === key;
+  const cls = ACTION_CSS[key] || 'action-ok';
+  const lbl = ACTION_LABELS[key] || key;
+  const activeCls = isActive ? ' active-filter' : '';
+  const click = key!=='ok' ? `onclick="toggleActionFilter('${tab}','${key}')"` : '';
+  return `<span class="action-chip ${cls}${activeCls}" ${click}>${lbl}</span>`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
+function daysSince(d) {
+  if (!d) return 999;
+  return Math.floor((new Date('2026-03-26') - new Date(d)) / 86400000);
+}
 function activationStep(r) {
-  // 5 step sequenziali:
-  // 1 = Account creato (sempre vero se il cliente è nel sistema)
-  // 2 = Product Tour completato
-  // 3 = Setup profilo completato
-  // 4 = Prima scansione QR ricevuta
-  // 5 = Survey D7 inviata e compilata
-  let s = 1;
+  let s=1;
   if (r.productTour) s++;
   if (r.setupCompleto) s++;
   if (r.scansioni > 0) s++;
   if (r.d7Survey) s++;
   return s;
 }
-
-function stepLabel(n) {
-  return ['Account creato', 'Product Tour', 'Setup completato', 'Prima scansione QR', 'Survey D7'][n - 1] || '';
+function getActivationActionKey(r) {
+  const d = daysSince(r.dataSignup), s = activationStep(r);
+  if (d>=14 && s<=2) return 'chat';
+  if (d>=7  && !r.productTour) return 'tour';
+  if (d>=7  && s<3) return 'banner';
+  if (d>=3  && !r.d7Survey && s>=3) return 'survey';
+  if (s===5) return 'ok';
+  return 'tour';
 }
-
+function getHealthActionKey(r) {
+  if (r.healthZone==='red' && r.loginGG<5) return 'chat';
+  if (r.healthZone==='red') return 'post';
+  if (r.healthZone==='yellow' && r.scansioni<20) return 'banner';
+  if (r.healthZone==='yellow') return 'post';
+  if (r.fundIdoneo && r.fundStatus==='not_reached') return 'fund';
+  if (!r.fundIdoneo && r.moduliAttivati<r.moduliTotali) return 'upsell';
+  return 'ok';
+}
+function getFundActionKey(r) {
+  if (r.fundStatus==='not_reached') return 'fund';
+  if (r.fundStatus==='shown')       return 'post';
+  if (r.fundStatus==='applied')     return 'banner';
+  if (r.fundStatus==='obtained')    return 'upsell';
+  return 'ok';
+}
 function healthBadge(zone) {
-  const map = { green: 'badge-green', yellow: 'badge-yellow', red: 'badge-red' };
-  const label = { green: '● Verde', yellow: '● Giallo', red: '● Rosso' };
-  return `<span class="badge ${map[zone] || 'badge-gray'}">${label[zone] || '● N/D'}</span>`;
+  const m={green:'badge-green ● Verde',yellow:'badge-yellow ● Giallo',red:'badge-red ● Rosso'};
+  const [cls,lbl]=(m[zone]||'badge-gray ● N/D').split(' ',2); // fallback
+  const parts = (m[zone]||'badge-gray|● N/D').split('|');
+  const c2 = {green:'badge-green',yellow:'badge-yellow',red:'badge-red'}[zone]||'badge-gray';
+  const l2 = {green:'● Verde',yellow:'● Giallo',red:'● Rosso'}[zone]||'● N/D';
+  return `<span class="badge ${c2}">${l2}</span>`;
 }
-
 function segBadge(seg) {
-  const c = { Bistrot:'blue', Resort:'purple', Agriturismo:'green', Pizzeria:'orange', Trattoria:'yellow' }[seg] || 'gray';
-  return `<span class="badge badge-${c}">${seg || '—'}</span>`;
+  const c={Bistrot:'blue',Resort:'purple',Agriturismo:'green',Pizzeria:'orange',Trattoria:'yellow','Bar Ristorante':'blue',Pub:'gray',Braceria:'orange',Ristorante:'blue',Osteria:'yellow','Sushi Bar':'purple'}[seg]||'gray';
+  return `<span class="badge badge-${c}">${seg||'—'}</span>`;
 }
-
-function pagamentiBadge(p) {
-  if (p === 'ok') return '<span class="badge badge-green">ok</span>';
-  if (p === 'overdue') return '<span class="badge badge-red">scaduto</span>';
-  return '<span class="badge badge-gray">—</span>';
+function pagBadge(p) {
+  return p==='ok'?'<span class="badge badge-green">ok</span>':p==='overdue'?'<span class="badge badge-red">scaduto</span>':'<span class="badge badge-gray">—</span>';
 }
-
-function fundStageBadge(status) {
-  const map = { not_reached:['badge-gray','Da contattare'], shown:['badge-blue','Proposta inviata'], applied:['badge-yellow','In candidatura'], obtained:['badge-green','Ottenuto'] };
-  const [cls, label] = map[status] || ['badge-gray', status];
-  return `<span class="badge ${cls}">${label}</span>`;
+function fundStageBadge(s) {
+  const m={not_reached:['badge-gray','Da contattare'],shown:['badge-blue','Proposta inviata'],applied:['badge-yellow','In candidatura'],obtained:['badge-green','Ottenuto']};
+  const [c,l]=m[s]||['badge-gray',s];
+  return `<span class="badge ${c}">${l}</span>`;
 }
+function stepLabel(n){return['Account creato','Product Tour','Setup completato','Prima scansione QR','Survey D7'][n-1]||'';}
 
-function actionActivation(r) {
-  const days = daysSince(r.dataSignup);
-  const step = activationStep(r);
-  // Giorno 14+: setup ancora fermo ai primi 2 step → intervento diretto CSM via Chat
-  if (days >= 14 && step <= 2) return '<span class="action-chip action-chat">💬 Chat CSM</span>';
-  // Giorno 7+: Product Tour non ancora fatto → avviarlo è il passo più critico
-  if (days >= 7 && !r.productTour) return '<span class="action-chip action-tour">🎯 Avvia Product Tour</span>';
-  // Giorno 7+: meno di 3 step completati → Banner in-app "Completa il setup"
-  if (days >= 7 && step < 3) return '<span class="action-chip action-banner">📌 Banner setup</span>';
-  // Giorno 3+: setup avanzato ma survey mancante → raccogliere il primo feedback
-  if (days >= 3 && !r.d7Survey && step >= 3) return '<span class="action-chip action-post">📋 Survey configurazione</span>';
-  if (step === 5) return '<span class="action-chip action-ok">✓ Onboarding completato</span>';
-  return '<span class="action-chip action-tour">🎯 Product Tour D0</span>';
-}
-
-function actionHealth(r) {
-  if (r.healthZone === 'red' && r.loginGG < 5) return '<span class="action-chip action-chat">💬 Chat CSM urgente</span>';
-  if (r.healthZone === 'red') return '<span class="action-chip action-post">📣 Post + Product Tour</span>';
-  if (r.healthZone === 'yellow' && r.scansioni < 20) return '<span class="action-chip action-banner">📌 Banner tips QR</span>';
-  if (r.healthZone === 'yellow') return '<span class="action-chip action-post">📣 Post engagement</span>';
-  if (r.fundIdoneo && r.fundStatus === 'not_reached') return '<span class="action-chip action-fund">💰 Banner Fund</span>';
-  if (!r.fundIdoneo && r.moduliAttivati < r.moduliTotali) return '<span class="action-chip action-upsell">📈 Proponi moduli</span>';
-  return '<span class="action-chip action-ok">✓ Cliente sano</span>';
-}
-
-function actionFund(r) {
-  if (r.fundStatus === 'not_reached') return '<span class="action-chip action-fund">💰 Invia Banner Fund</span>';
-  if (r.fundStatus === 'shown') return '<span class="action-chip action-post">📣 Follow-up Post (7gg)</span>';
-  if (r.fundStatus === 'applied') return '<span class="action-chip action-banner">📌 Monitora candidatura</span>';
-  if (r.fundStatus === 'obtained') return '<span class="action-chip action-upsell">📈 Proponi upsell moduli</span>';
-  return '—';
-}
-
-// ─── FILTERS INIT ────────────────────────────────────────────────────────────
-
-function populateSegmentFilters() {
-  const segs = [...new Set(DATA.map(r => r.segmento).filter(Boolean))].sort();
-  ['filter-seg-activation', 'filter-seg-fund'].forEach(id => {
-    const el = document.getElementById(id);
-    segs.forEach(s => { const o = document.createElement('option'); o.value = s; o.textContent = s; el.appendChild(o); });
-  });
-}
-
-// ─── NAVIGATION ──────────────────────────────────────────────────────────────
-
+// ═══════════════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════════════
 function showTab(name) {
-  ['activation', 'health', 'fund'].forEach(t => {
-    document.getElementById('pane-' + t).style.display = t === name ? '' : 'none';
-    document.getElementById('nav-' + t).className = 'nav-item' + (t === name ? ' active' : '');
+  ['overview','activation','health','fund'].forEach(t => {
+    document.getElementById('pane-'+t).style.display = t===name?'':'none';
+    document.getElementById('nav-'+t).className = 'nav-item'+(t===name?' active':'');
   });
 }
 
-// ─── RENDER: ACTIVATION ──────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════════════════════
+function renderOverview() {
+  const onboarded = DATA.filter(r => r.setupCompleto);
+  const newC = DATA.filter(r => !r.setupCompleto);
+  const healthAvg = Math.round(onboarded.reduce((s,r)=>s+r.healthScore,0)/onboarded.length);
+  const atRisk = onboarded.filter(r=>r.healthZone==='red').length;
+  const fundIdonei = DATA.filter(r=>r.fundIdoneo).length;
+  const tickets = DATA.reduce((s,r)=>s+r.ticketCS,0);
+  const npsArr = DATA.filter(r=>r.nps!==null).map(r=>r.nps);
+  const npsAvg = npsArr.length ? Math.round(npsArr.reduce((a,b)=>a+b,0)/npsArr.length*10)/10 : '—';
 
+  // KPI cards
+  const kpis = [
+    {label:'Clienti totali',    val:100,              sub:'850+ globali',         color:'text-gray-900'},
+    {label:'In onboarding',     val:newC.length+'%',  sub:`${newC.length} clienti`,      color:'text-indigo-600'},
+    {label:'Onboardati',        val:onboarded.length+'%', sub:`${onboarded.length} clienti`, color:'text-green-600'},
+    {label:'A rischio (red)',   val:atRisk,            sub:`${Math.round(atRisk/onboarded.length*100)}% degli onboardati`, color:'text-red-600'},
+    {label:'Fund idonei',       val:fundIdonei,        sub:`${Math.round(fundIdonei/100*100)}% della base`,color:'text-cyan-600'},
+    {label:'NPS medio',         val:npsAvg,            sub:'su clienti onboardati', color:'text-amber-600'},
+  ];
+  // fix percentages
+  kpis[1].val = newC.length;
+  kpis[2].val = onboarded.length;
+  document.getElementById('overview-kpis').innerHTML = kpis.map(k=>`
+    <div class="kpi-card col-span-1">
+      <div class="text-xs text-gray-500 mb-1">${k.label}</div>
+      <div class="text-2xl font-bold ${k.color}">${k.val}</div>
+      <div class="text-xs text-gray-400 mt-1">${k.sub}</div>
+    </div>`).join('');
+
+  document.getElementById('health-avg-ov').textContent = healthAvg;
+
+  // Health zones chart
+  const zones = {green:0,yellow:0,red:0,unknown:0};
+  onboarded.forEach(r=>{ zones[r.healthZone]=(zones[r.healthZone]||0)+1; });
+  const zoneData = [
+    {label:'Verde',   count:zones.green||0,   color:'bg-green-500',  pct:Math.round((zones.green||0)/onboarded.length*100)},
+    {label:'Giallo',  count:zones.yellow||0,  color:'bg-amber-400',  pct:Math.round((zones.yellow||0)/onboarded.length*100)},
+    {label:'Rosso',   count:zones.red||0,     color:'bg-red-500',    pct:Math.round((zones.red||0)/onboarded.length*100)},
+    {label:'N/D',     count:zones.unknown||0, color:'bg-gray-300',   pct:Math.round((zones.unknown||0)/onboarded.length*100)},
+  ];
+  document.getElementById('chart-health').innerHTML = zoneData.map(z=>`
+    <div class="flex items-center gap-2">
+      <div class="w-14 text-xs text-gray-500 flex-shrink-0">${z.label}</div>
+      <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
+        <div class="${z.color} h-5 rounded-full flex items-center px-2" style="width:${z.pct}%;min-width:${z.count>0?'24px':'0'}">
+          <span class="text-white text-xs font-semibold">${z.count>0?z.count:''}</span>
+        </div>
+      </div>
+      <div class="w-8 text-right text-xs text-gray-500">${z.pct}%</div>
+    </div>`).join('');
+
+  // Activation funnel chart
+  const stepCounts = [0,0,0,0,0];
+  newC.forEach(r=>{ const s=activationStep(r)-1; if(s>=0&&s<5) stepCounts[s]++; });
+  const stepColors = ['bg-red-400','bg-orange-400','bg-amber-400','bg-lime-500','bg-green-500'];
+  document.getElementById('chart-activation').innerHTML = [1,2,3,4,5].map((s,i)=>`
+    <div class="flex items-center gap-2">
+      <div class="w-14 text-xs text-gray-500 flex-shrink-0 truncate">${stepLabel(s).replace(' ','&nbsp;')}</div>
+      <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
+        <div class="${stepColors[i]} h-5 rounded-full flex items-center px-2" style="width:${Math.max(stepCounts[i]/newC.length*100,2)}%;min-width:${stepCounts[i]>0?'24px':'4px'}">
+          <span class="text-white text-xs font-semibold">${stepCounts[i]>0?stepCounts[i]:''}</span>
+        </div>
+      </div>
+      <div class="w-6 text-right text-xs text-gray-500">${stepCounts[i]}</div>
+    </div>`).join('');
+
+  // Fund pipeline chart
+  const fundIdoneiAll = DATA.filter(r=>r.fundIdoneo);
+  const fundData = [
+    {label:'Da contattare', count:fundIdoneiAll.filter(r=>r.fundStatus==='not_reached').length, color:'bg-gray-400'},
+    {label:'Proposta inv.',  count:fundIdoneiAll.filter(r=>r.fundStatus==='shown').length,       color:'bg-blue-500'},
+    {label:'In candidatura', count:fundIdoneiAll.filter(r=>r.fundStatus==='applied').length,     color:'bg-amber-500'},
+    {label:'Ottenuto',       count:fundIdoneiAll.filter(r=>r.fundStatus==='obtained').length,    color:'bg-green-500'},
+  ];
+  document.getElementById('chart-fund').innerHTML = fundData.map(f=>`
+    <div class="flex items-center gap-2">
+      <div class="w-20 text-xs text-gray-500 flex-shrink-0">${f.label}</div>
+      <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
+        <div class="${f.color} h-5 rounded-full flex items-center px-2" style="width:${Math.max(f.count/fundIdoneiAll.length*100,2)}%;min-width:${f.count>0?'24px':'4px'}">
+          <span class="text-white text-xs font-semibold">${f.count>0?f.count:''}</span>
+        </div>
+      </div>
+      <div class="w-6 text-right text-xs text-gray-500">${f.count}</div>
+    </div>`).join('');
+
+  // Top segment for fund
+  const segFund = {};
+  fundIdoneiAll.forEach(r=>{ segFund[r.segmento]=(segFund[r.segmento]||0)+1; });
+  const topSeg = Object.entries(segFund).sort((a,b)=>b[1]-a[1])[0];
+  document.getElementById('fund-top-seg').textContent = topSeg ? `${topSeg[0]} (${topSeg[1]})` : '—';
+
+  // Italy map
+  const regionCounts = {};
+  DATA.forEach(r=>{ regionCounts[r.regione]=(regionCounts[r.regione]||0)+1; });
+  const maxCount = Math.max(...Object.values(regionCounts));
+  const dotsHtml = REGIONS.map(reg=>{
+    const cnt = regionCounts[reg.name]||0;
+    if (!cnt) return '';
+    const r = 2.5 + (cnt/maxCount)*5;
+    const opacity = 0.5 + (cnt/maxCount)*0.5;
+    return `<circle class="map-dot" cx="${reg.x}" cy="${reg.y}" r="${r}" fill="#6366f1" fill-opacity="${opacity}">
+      <title>${reg.name}: ${cnt} clienti</title>
+    </circle>`;
+  }).join('');
+  document.getElementById('map-dots').innerHTML = dotsHtml;
+
+  // Map legend (top 10 regions)
+  const topRegions = Object.entries(regionCounts).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  document.getElementById('map-legend').innerHTML = topRegions.map(([name,cnt])=>`
+    <div class="flex items-center justify-between gap-2 py-0.5">
+      <div class="flex items-center gap-1.5">
+        <span class="w-2 h-2 rounded-full bg-indigo-500 inline-block flex-shrink-0" style="opacity:${0.4+cnt/maxCount*0.6}"></span>
+        <span class="text-gray-600">${name}</span>
+      </div>
+      <span class="font-semibold text-gray-800">${cnt}</span>
+    </div>`).join('');
+
+  // Segments chart
+  const segs = {};
+  DATA.forEach(r=>{ if(!segs[r.segmento]) segs[r.segmento]={count:0,healthSum:0,healthCount:0}; segs[r.segmento].count++; if(r.setupCompleto){segs[r.segmento].healthSum+=r.healthScore;segs[r.segmento].healthCount++;} });
+  const segEntries = Object.entries(segs).sort((a,b)=>b[1].count-a[1].count);
+  document.getElementById('chart-segments').innerHTML = segEntries.map(([name,d])=>{
+    const avg = d.healthCount ? Math.round(d.healthSum/d.healthCount) : null;
+    const avgColor = avg===null?'text-gray-300':avg>=70?'text-green-600':avg>=40?'text-amber-600':'text-red-600';
+    return `<div class="flex items-center gap-2">
+      <div class="w-24 text-xs text-gray-600 flex-shrink-0 truncate">${name}</div>
+      <div class="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+        <div class="bg-indigo-400 h-4 rounded-full" style="width:${d.count/100*100}%"></div>
+      </div>
+      <div class="w-5 text-right text-xs text-gray-600 font-medium">${d.count}</div>
+      <div class="w-10 text-right text-xs ${avgColor} font-semibold">${avg!==null?avg+'HS':'—'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER: ACTIVATION
+// ═══════════════════════════════════════════════════════════════
 function renderActivation() {
   const search = document.getElementById('search-activation').value.toLowerCase();
-  const seg = document.getElementById('filter-seg-activation').value;
-  const sf = document.getElementById('filter-step-activation').value;
+  const seg    = document.getElementById('filter-seg-activation').value;
+  const sf     = document.getElementById('filter-step-activation').value;
+  const af     = actionFilters.activation;
 
-  let rows = DATA.filter(r => !r.setupCompleto || activationStep(r) < 5);
+  let rows = DATA.filter(r => !r.setupCompleto || activationStep(r)<5);
   if (search) rows = rows.filter(r => r.nome.toLowerCase().includes(search));
-  if (seg) rows = rows.filter(r => r.segmento === seg);
-  if (sf !== '') {
-    const s = parseInt(sf);
-    rows = rows.filter(r => { const st = activationStep(r); return s===0 ? st<=2 : s===2 ? st>=2&&st<=3 : st>=4; });
-  }
-  rows.sort((a, b) => daysSince(b.dataSignup) - daysSince(a.dataSignup));
-  document.getElementById('cnt-activation').textContent = rows.length;
+  if (seg)    rows = rows.filter(r => r.segmento===seg);
+  if (sf!=='') { const s=parseInt(sf); rows=rows.filter(r=>{const st=activationStep(r);return s===0?st<=2:s===2?st>=2&&st<=3:st>=4;}); }
+  if (af)     rows = rows.filter(r => getActivationActionKey(r)===af);
+  rows.sort((a,b)=>daysSince(b.dataSignup)-daysSince(a.dataSignup));
+  document.getElementById('cnt-activation').textContent = DATA.filter(r=>!r.setupCompleto||activationStep(r)<5).length;
 
-  document.getElementById('tbody-activation').innerHTML = rows.map(r => {
-    const days = daysSince(r.dataSignup);
-    const step = activationStep(r);
-    const pct = Math.round((step / 5) * 100);
-    const stepsHtml = [1,2,3,4,5].map(i => {
-      const done = i <= step;
-      return `<span class="tooltip"><span class="step-dot ${done ? 'step-done' : 'step-pending'}">${done ? '✓' : i}</span><span class="tip">${stepLabel(i)}</span></span>`;
-    }).join('<span class="text-gray-300 mx-0.5 text-xs">—</span>');
-    const daysClass = days > 14 ? 'text-red-600 font-semibold' : days > 7 ? 'text-amber-600' : 'text-gray-700';
-
+  document.getElementById('tbody-activation').innerHTML = rows.map(r=>{
+    const days=daysSince(r.dataSignup), step=activationStep(r), pct=Math.round(step/5*100);
+    const stepsHtml=[1,2,3,4,5].map(i=>`<span class="tooltip"><span class="step-dot ${i<=step?'step-done':'step-pending'}">${i<=step?'✓':i}</span><span class="tip">${stepLabel(i)}</span></span>`).join('<span class="text-gray-300 mx-0.5 text-xs">—</span>');
+    const daysClass=days>14?'text-red-600 font-semibold':days>7?'text-amber-600':'text-gray-700';
+    const key=getActivationActionKey(r);
     return `<tr>
-      <td>
-        <div class="font-medium text-gray-900">${r.nome}</div>
-        ${r.sintesiChat ? `<div class="text-xs text-gray-400 mt-0.5 max-w-xs truncate">${r.sintesiChat}</div>` : ''}
-      </td>
+      <td><div class="font-medium text-gray-900">${r.nome}</div>${r.sintesiChat?`<div class="text-xs text-gray-400 mt-0.5 max-w-xs truncate">${r.sintesiChat}</div>`:''}</td>
       <td>${segBadge(r.segmento)}</td>
       <td class="text-center"><span class="${daysClass}">${days}gg</span></td>
-      <td class="text-center">
-        <div class="flex items-center gap-2 justify-center">
-          <div class="progress-bar w-14"><div class="progress-fill ${r.completezza>=70?'bg-green-500':r.completezza>=40?'bg-amber-400':'bg-red-400'}" style="width:${r.completezza}%"></div></div>
-          <span class="text-xs text-gray-600">${r.completezza}%</span>
-        </div>
-      </td>
+      <td class="text-center"><div class="flex items-center gap-2 justify-center"><div class="progress-bar w-14"><div class="progress-fill ${r.completezza>=70?'bg-green-500':r.completezza>=40?'bg-amber-400':'bg-red-400'}" style="width:${r.completezza}%"></div></div><span class="text-xs text-gray-600">${r.completezza}%</span></div></td>
       <td class="text-center text-xs text-gray-600">${r.moduliAttivati}/${r.moduliTotali}</td>
-      <td>
-        <div class="flex items-center gap-1 flex-wrap">${stepsHtml}</div>
-        <div class="progress-bar mt-1.5 w-28"><div class="progress-fill bg-indigo-500" style="width:${pct}%"></div></div>
-      </td>
-      <td>${actionActivation(r)}</td>
+      <td><div class="flex items-center gap-1 flex-wrap">${stepsHtml}</div><div class="progress-bar mt-1.5 w-28"><div class="progress-fill bg-indigo-500" style="width:${pct}%"></div></div></td>
+      <td>${chip(key,'activation')}</td>
     </tr>`;
   }).join('');
 }
 
-// ─── RENDER: HEALTH ──────────────────────────────────────────────────────────
-
+// ═══════════════════════════════════════════════════════════════
+// RENDER: HEALTH
+// ═══════════════════════════════════════════════════════════════
 function renderHealth() {
-  const search = document.getElementById('search-health').value.toLowerCase();
-  const zone = document.getElementById('filter-zone').value;
-  const fundF = document.getElementById('filter-fund-health').value;
-  const priF = document.getElementById('filter-priority').value;
+  const search=document.getElementById('search-health').value.toLowerCase();
+  const zone=document.getElementById('filter-zone').value;
+  const fundF=document.getElementById('filter-fund-health').value;
+  const priF=document.getElementById('filter-priority').value;
+  const af=actionFilters.health;
 
-  let rows = DATA.filter(r => r.setupCompleto);
-  if (search) rows = rows.filter(r => r.nome.toLowerCase().includes(search));
-  if (zone) rows = rows.filter(r => r.healthZone === zone);
-  if (fundF === 'no') rows = rows.filter(r => !r.fundIdoneo || r.fundStatus === 'not_reached');
-  if (fundF === 'yes') rows = rows.filter(r => r.fundIdoneo && r.fundStatus !== 'not_reached');
-  if (priF === 'yes') rows = rows.filter(r => r.prioritaCS);
-  rows.sort((a, b) => a.healthScore - b.healthScore);
+  let rows=DATA.filter(r=>r.setupCompleto);
+  if(search) rows=rows.filter(r=>r.nome.toLowerCase().includes(search));
+  if(zone)   rows=rows.filter(r=>r.healthZone===zone);
+  if(fundF==='no') rows=rows.filter(r=>!r.fundIdoneo||r.fundStatus==='not_reached');
+  if(fundF==='yes') rows=rows.filter(r=>r.fundIdoneo&&r.fundStatus!=='not_reached');
+  if(priF==='yes') rows=rows.filter(r=>r.prioritaCS);
+  if(af) rows=rows.filter(r=>getHealthActionKey(r)===af);
+  rows.sort((a,b)=>a.healthScore-b.healthScore);
 
-  const all = DATA.filter(r => r.setupCompleto);
-  document.getElementById('kpi-health-avg').textContent = Math.round(all.reduce((s,r) => s + r.healthScore, 0) / all.length);
-  document.getElementById('kpi-at-risk').textContent = all.filter(r => r.healthZone === 'red').length;
-  document.getElementById('kpi-priority').textContent = all.filter(r => r.prioritaCS).length;
-  document.getElementById('kpi-tickets').textContent = all.reduce((s,r) => s + r.ticketCS, 0);
-  document.getElementById('cnt-health').textContent = all.length;
+  const all=DATA.filter(r=>r.setupCompleto);
+  document.getElementById('kpi-health-avg').textContent=Math.round(all.reduce((s,r)=>s+r.healthScore,0)/all.length);
+  document.getElementById('kpi-at-risk').textContent=all.filter(r=>r.healthZone==='red').length;
+  document.getElementById('kpi-priority').textContent=all.filter(r=>r.prioritaCS).length;
+  document.getElementById('kpi-tickets').textContent=all.reduce((s,r)=>s+r.ticketCS,0);
+  document.getElementById('cnt-health').textContent=all.length;
 
-  document.getElementById('tbody-health').innerHTML = rows.map(r => {
-    const npsHtml = r.nps !== null ? `<span class="${r.nps<=6?'text-red-600':r.nps<=8?'text-amber-600':'text-green-600'} font-semibold">${r.nps}</span>` : '<span class="text-gray-300">—</span>';
-    let fundBadge = r.fundIdoneo ? (r.fundStatus==='not_reached' ? '<span class="badge badge-blue">Idoneo</span>' : fundStageBadge(r.fundStatus)) : '<span class="badge badge-gray">N/A</span>';
-    const interBadge = r.tipoUltimaInterazione ? `<span class="badge badge-gray">${r.tipoUltimaInterazione}</span>` : '<span class="text-gray-300">—</span>';
-
+  document.getElementById('tbody-health').innerHTML=rows.map(r=>{
+    const npsHtml=r.nps!==null?`<span class="${r.nps<=6?'text-red-600':r.nps<=8?'text-amber-600':'text-green-600'} font-semibold">${r.nps}</span>`:'<span class="text-gray-300">—</span>';
+    const fundBadge=r.fundIdoneo?(r.fundStatus==='not_reached'?'<span class="badge badge-blue">Idoneo</span>':fundStageBadge(r.fundStatus)):'<span class="badge badge-gray">N/A</span>';
+    const inter=r.tipoUltimaInterazione?`<span class="badge badge-gray">${r.tipoUltimaInterazione}</span>`:'<span class="text-gray-300">—</span>';
+    const key=getHealthActionKey(r);
     return `<tr>
-      <td>
-        <div class="flex items-center gap-2">
-          ${r.prioritaCS ? '<span class="tooltip"><span class="text-amber-500 text-sm">⚡</span><span class="tip">Priorità CS</span></span>' : ''}
-          <div>
-            <div class="font-medium text-gray-900">${r.nome}</div>
-            ${r.sintesiChat ? `<div class="text-xs text-gray-400 mt-0.5 max-w-xs truncate">${r.sintesiChat}</div>` : ''}
-          </div>
-        </div>
-      </td>
+      <td><div class="flex items-center gap-2">${r.prioritaCS?'<span class="tooltip"><span class="text-amber-500">⚡</span><span class="tip">Priorità CS</span></span>':''}<div><div class="font-medium text-gray-900">${r.nome}</div>${r.sintesiChat?`<div class="text-xs text-gray-400 mt-0.5 max-w-xs truncate">${r.sintesiChat}</div>`:''}</div></div></td>
       <td>${segBadge(r.segmento)}</td>
-      <td class="text-center">
-        <div class="flex flex-col items-center gap-1">
-          ${healthBadge(r.healthZone)}
-          <span class="text-xs text-gray-400">${r.healthScore}/100</span>
-        </div>
-      </td>
+      <td class="text-center"><div class="flex flex-col items-center gap-1">${healthBadge(r.healthZone)}<span class="text-xs text-gray-400">${r.healthScore}/100</span></div></td>
       <td class="text-center font-medium text-gray-700">${r.scansioni}</td>
       <td class="text-center text-gray-600">${r.loginGG}</td>
       <td class="text-center text-gray-600">${r.postVisti}</td>
       <td class="text-center">${npsHtml}</td>
-      <td>${interBadge}</td>
-      <td>${actionHealth(r)}</td>
+      <td>${inter}</td>
+      <td>${chip(key,'health')}</td>
       <td class="text-center">${fundBadge}</td>
     </tr>`;
   }).join('');
 }
 
-// ─── RENDER: FUND ─────────────────────────────────────────────────────────────
-
+// ═══════════════════════════════════════════════════════════════
+// RENDER: FUND
+// ═══════════════════════════════════════════════════════════════
 function renderFund() {
-  const search = document.getElementById('search-fund').value.toLowerCase();
-  const status = document.getElementById('filter-fund-status').value;
-  const seg = document.getElementById('filter-seg-fund').value;
+  const search=document.getElementById('search-fund').value.toLowerCase();
+  const status=document.getElementById('filter-fund-status').value;
+  const seg=document.getElementById('filter-seg-fund').value;
+  const af=actionFilters.fund;
+  const dotColor={not_reached:'bg-gray-300',shown:'bg-blue-400',applied:'bg-amber-400',obtained:'bg-green-500'};
 
-  let rows = DATA.filter(r => r.fundIdoneo);
-  if (search) rows = rows.filter(r => r.nome.toLowerCase().includes(search));
-  if (status) rows = rows.filter(r => r.fundStatus === status);
-  if (seg) rows = rows.filter(r => r.segmento === seg);
-  rows.sort((a,b) => ({'applied':0,'shown':1,'not_reached':2,'obtained':3}[a.fundStatus]||9) - ({'applied':0,'shown':1,'not_reached':2,'obtained':3}[b.fundStatus]||9));
+  let rows=DATA.filter(r=>r.fundIdoneo);
+  if(search) rows=rows.filter(r=>r.nome.toLowerCase().includes(search));
+  if(status) rows=rows.filter(r=>r.fundStatus===status);
+  if(seg)    rows=rows.filter(r=>r.segmento===seg);
+  if(af)     rows=rows.filter(r=>getFundActionKey(r)===af);
+  rows.sort((a,b)=>({'applied':0,'shown':1,'not_reached':2,'obtained':3}[a.fundStatus]||9)-({'applied':0,'shown':1,'not_reached':2,'obtained':3}[b.fundStatus]||9));
 
-  const all = DATA.filter(r => r.fundIdoneo);
-  document.getElementById('kpi-idonei').textContent = all.length;
-  document.getElementById('kpi-applied').textContent = all.filter(r => r.fundStatus==='applied').length;
-  document.getElementById('kpi-obtained').textContent = all.filter(r => r.fundStatus==='obtained').length;
-  document.getElementById('kpi-not-reached').textContent = all.filter(r => r.fundStatus==='not_reached').length;
-  document.getElementById('cnt-fund').textContent = all.length;
+  const all=DATA.filter(r=>r.fundIdoneo);
+  document.getElementById('kpi-idonei').textContent=all.length;
+  document.getElementById('kpi-applied').textContent=all.filter(r=>r.fundStatus==='applied').length;
+  document.getElementById('kpi-obtained').textContent=all.filter(r=>r.fundStatus==='obtained').length;
+  document.getElementById('kpi-not-reached').textContent=all.filter(r=>r.fundStatus==='not_reached').length;
+  document.getElementById('cnt-fund').textContent=all.length;
 
-  const dotColor = { not_reached:'bg-gray-300', shown:'bg-blue-400', applied:'bg-amber-400', obtained:'bg-green-500' };
-
-  document.getElementById('tbody-fund').innerHTML = rows.map(r => `<tr>
-    <td><div class="font-medium text-gray-900">${r.nome}</div></td>
-    <td>${segBadge(r.segmento)}</td>
-    <td>
-      <div class="flex items-center gap-2">
-        <span class="w-2.5 h-2.5 rounded-full ${dotColor[r.fundStatus]||'bg-gray-300'} inline-block flex-shrink-0"></span>
-        ${fundStageBadge(r.fundStatus)}
-      </div>
-    </td>
-    <td class="text-center">${healthBadge(r.healthZone)}</td>
-    <td class="text-center">${pagamentiBadge(r.pagamenti)}</td>
-    <td class="text-center text-sm text-gray-600">${r.moduliAttivati}/${r.moduliTotali}</td>
-    <td><div class="text-xs text-gray-500 max-w-xs truncate">${r.sintesiChat||'—'}</div></td>
-    <td>${actionFund(r)}</td>
-  </tr>`).join('');
+  document.getElementById('tbody-fund').innerHTML=rows.map(r=>{
+    const key=getFundActionKey(r);
+    return `<tr>
+      <td><div class="font-medium text-gray-900">${r.nome}</div></td>
+      <td>${segBadge(r.segmento)}</td>
+      <td><div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full ${dotColor[r.fundStatus]||'bg-gray-300'} inline-block flex-shrink-0"></span>${fundStageBadge(r.fundStatus)}</div></td>
+      <td class="text-center">${healthBadge(r.healthZone)}</td>
+      <td class="text-center">${pagBadge(r.pagamenti)}</td>
+      <td class="text-center text-sm text-gray-600">${r.moduliAttivati}/${r.moduliTotali}</td>
+      <td><div class="text-xs text-gray-500 max-w-xs truncate">${r.sintesiChat||'—'}</div></td>
+      <td>${chip(key,'fund')}</td>
+    </tr>`;
+  }).join('');
 }
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+function populateSegmentFilters() {
+  const segs=[...new Set(DATA.map(r=>r.segmento).filter(Boolean))].sort();
+  ['filter-seg-activation','filter-seg-fund'].forEach(id=>{
+    const el=document.getElementById(id);
+    segs.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;el.appendChild(o);});
+  });
+}
 populateSegmentFilters();
+renderOverview();
 renderActivation();
 renderHealth();
 renderFund();
